@@ -1,8 +1,7 @@
 <?php
 
-// Saxon Mailey 2005
-// Australian Information Technologies
-// support@auit.com.au
+// Saxon Mailey 2015
+// saxon at scm dot id dot au
 
 date_default_timezone_set("Australia/Perth");
 
