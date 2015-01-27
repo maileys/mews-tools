@@ -1,5 +1,8 @@
 <?php
 
+// Saxon Mailey 2015
+// saxon at scm dot id dot au
+
 session_name("themews");
 session_start();
 
