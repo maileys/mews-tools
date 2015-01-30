@@ -10,6 +10,7 @@ date_default_timezone_set("Australia/Perth");
 <html>
 <head>
 <title>The Mews - User Last Visit Times</title>
+<meta name="HandheldFriendly" content="true" />
 <link rel="stylesheet" href="/tools/default.css" type="text/css" />
 </head>
 <body>
