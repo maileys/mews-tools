@@ -3,7 +3,6 @@
 // Saxon Mailey 2015
 // saxon at scm dot id dot au
 
-session_name("themews");
 session_start();
 
 require 'db_mewsmisc.php';
@@ -31,6 +30,9 @@ if (isset($_GET['geolocation'])) {
 
 
 <html>
+<head>
+	<meta name="HandheldFriendly" content="true" />
+</head>
 <body>
 <?php
 
