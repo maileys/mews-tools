@@ -8,10 +8,16 @@ session_start();
 require 'db_mewsmisc.php';
 
 if (isset($_GET['geolocation'])) {
-	$latitude  = $_GET['latitude'];
-	$longitude = $_GET['longitude'];
-	$_SESSION['latitude']  = $latitude;
-	$_SESSION['longitude'] = $longitude;
+	$latitude         = $_GET['latitude'];
+	$longitude        = $_GET['longitude'];
+	$accuracy         = $_GET['accuracy'];
+	$altitude         = $_GET['altitude'];
+	$altitudeaccuracy = $_GET['altitudeaccuracy'];
+	$heading          = $_GET['heading'];
+	$speed            = $_GET['speed'];
+	$_SESSION['geolatitude']  = $latitude;
+	$_SESSION['geolongitude'] = $longitude;
+	$_SESSION['geoaccuracy'] = $accuracy;
 	header("latitude: ${latitude}");
 	header("longitude: ${longitude}");
 	$_SESSION['geolocation']  = 'set';
@@ -20,8 +26,26 @@ if (isset($_GET['geolocation'])) {
 	$IP=$_SERVER['REMOTE_ADDR'];
 	$connection = mysql_connect($DBHOST,$DBUSER,$DBPASS);
 	mysql_select_db($DBNAME,$connection);
-	$SQL = 'INSERT INTO location (ip,latitude,longitude) values (' . "'$IP',$latitude,$longitude)";
-	$result = mysql_query($SQL,$connection) or die('cannot execute SQL');
+	$fieldlist = 'ip,latitude,longitude,accuracy';
+	$valuelist = "'$IP',$latitude,$longitude,$accuracy";
+	if (is_numeric($altitude)) { 
+		$fieldlist = $fieldlist . ',altitude';
+		$valuelist = $valuelist . ",$altitude";
+	}
+	if (is_numeric($altitudeaccuracy)) { 
+		$fieldlist = $fieldlist . ',altitudeaccuracy';
+		$valuelist = $valuelist . ",$altitudeaccuracy";
+	}
+	if (is_numeric($heading)) { 
+		$fieldlist = $fieldlist . ',heading';
+		$valuelist = $valuelist . ",$heading";
+	}
+	if (is_numeric($speed)) { 
+		$fieldlist = $fieldlist . ',speed';
+		$valuelist = $valuelist . ",$speed";
+	}
+	$SQL = 'INSERT INTO location (' . $fieldlist . ') values (' . $valuelist . ')';
+	$result = mysql_query($SQL,$connection) or die("cannot execute SQL: $SQL");
 
 } else {
 
@@ -38,9 +62,10 @@ if (isset($_GET['geolocation'])) {
 
 	if (isset($_SESSION['geolocation'])) {
 		echo 'Cached Location Data:' . "<br>\n";
-		echo 'Latitude: '  . $_SESSION['latitude']  . "<br>\n";
-		echo 'Longitude: ' . $_SESSION['longitude'] . "<br>\n";
-		echo '<A HREF="http://google.com/maps/place/' . $_SESSION['latitude'] . ',' . $_SESSION['longitude'] . '">Google Maps</A>' . "\n";
+		echo 'Latitude: '  . $_SESSION['geolatitude']  . "<br>\n";
+		echo 'Longitude: ' . $_SESSION['geolongitude'] . "<br>\n";
+		echo 'Accuracy: ' . $_SESSION['geoaccuracy'] . "<br>\n";
+		echo '<A HREF="http://google.com/maps/place/' . $_SESSION['geolatitude'] . ',' . $_SESSION['geolongitude'] . '">Google Maps</A>' . "\n";
 	} else {
 
 
@@ -61,13 +86,19 @@ function getLocation() {
 
 function showPosition(position) {
 	x.innerHTML = "Latitude: " + position.coords.latitude + "<br>Longitude: " + position.coords.longitude;	
-	var latitude=encodeURIComponent(position.coords.latitude)
-	var longitude=encodeURIComponent(position.coords.longitude)
-	mygetrequest.open("GET", "?geolocation=true&latitude="+latitude+"&longitude="+longitude, true)
+	var latitude=encodeURIComponent(position.coords.latitude);
+	var longitude=encodeURIComponent(position.coords.longitude);
+	var accuracy=encodeURIComponent(position.coords.accuracy);
+	var altitude=encodeURIComponent(position.coords.altitude);
+	var altitudeaccuracy=encodeURIComponent(position.coords.altitudeaccuracy);
+	var heading=encodeURIComponent(position.coords.heading);
+	var speed=encodeURIComponent(position.coords.speed);
+	mygetrequest.open("GET", "?geolocation=true&latitude="+latitude+"&longitude="+longitude+"&accuracy="+accuracy+"&altitude="+altitude+"&altitudeaccuracy="+altitudeaccuracy+"&heading="+heading+"&speed="+speed, true)
 	mygetrequest.send(null)
 	x.innerHTML = "Detected Location Data:<br>\n" 
 		+ 'Latitude:'  + position.coords.latitude + "<br>\n"
 		+ 'Longitude:' + position.coords.latitude + "<br>\n"
+		+ 'Accuracy:'  + position.coords.accuracy + "<br>\n"
 		+ '<A HREF="http://google.com/maps/place/' + position.coords.latitude + ',' +position.coords.longitude + "\">Google Maps</A>"; 
 }
 
